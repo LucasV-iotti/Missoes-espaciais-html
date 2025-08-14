@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show do Conhecimento Financeiro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .tv-frame {
+            width: 98%;
+            max-width: 1200px;
+            height: 95vh;
+            margin: 1vh auto;
+            background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 
+                0 0 50px rgba(0,0,0,0.8),
+                inset 0 0 20px rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tv-screen {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 15px;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+        }
+
+        .screen-content {
+            width: 100%;
+            min-height: 100%;
+            position: relative;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+        }
+
+        /* Tela de Início */
+        .start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            animation: tvStatic 2s ease-in-out;
+            box-sizing: border-box;
+        }
+
+        @keyframes tvStatic {
+            0% { filter: brightness(0.5) contrast(2); }
+            100% { filter: brightness(1) contrast(1); }
+        }
+
+        .show-logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 20px #ff6b6b, 0 0 40px #ff6b6b;
+            margin-bottom: 15px;
+            animation: neonPulse 2s infinite alternate;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        @keyframes neonPulse {
+            0% { text-shadow: 0 0 20px #ff6b6b, 0 0 40px #ff6b6b; }
+            100% { text-shadow: 0 0 30px #ff6b6b, 0 0 60px #ff6b6b, 0 0 80px #ff6b6b; }
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #ffd700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .contestant-form {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #fff;
+            font-size: 1.2em;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            background: rgba(255,255,255,0.9);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 15px rgba(255,107,107,0.5);
+            transform: scale(1.02);
+        }
+
+        .start-button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(255,107,107,0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255,107,107,0.6);
+            background: linear-gradient(45deg, #ff8e53, #ff6b6b);
+        }
+
+        /* Menu de Jogos */
+        .game-menu {
+            display: none;
+            min-height: 100%;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            padding: 20px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .menu-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .player-info {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .player-name {
+            font-size: 1.5em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .player-segment {
+            font-size: 1em;
+            color: #fff;
+            margin-top: 5px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .game-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-color: #ffd700;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+            opacity: 0;
+        }
+
+        .game-card:hover::before {
+            animation: shine 0.6s ease-in-out;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+        }
+
+        .game-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .game-title {
+            font-size: 1.2em;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .game-description {
+            color: #fff;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        /* Área do Jogo */
+        .game-area {
+            display: none;
+            min-height: 100%;
+            background: linear-gradient(135deg, #2c5364, #203a43, #0f2027);
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .game-header {
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 3px solid #ffd700;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .game-title-header {
+            color: #ffd700;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .score-info {
+            color: #fff;
+            font-size: 1em;
+        }
+
+        .game-content {
+            padding: 20px;
+            min-height: calc(100vh - 160px);
+            overflow-y: visible;
+        }
+
+        /* Quiz Clássico */
+        .question-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .question {
+            font-size: 1.3em;
+            color: #fff;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .answer-btn {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .answer-btn:hover {
+            background: rgba(255,107,107,0.3);
+            border-color: #ff6b6b;
+            transform: scale(1.05);
+        }
+
+        .answer-btn.correct {
+            background: rgba(46,204,113,0.4);
+            border-color: #2ecc71;
+        }
+
+        .answer-btn.incorrect {
+            background: rgba(231,76,60,0.4);
+            border-color: #e74c3c;
+        }
+
+        /* Botões de Navegação */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 0 20px;
+            position: sticky;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            padding: 15px 20px;
+            border-top: 2px solid #ffd700;
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: rgba(46,204,113,0.2);
+            border: 2px solid #2ecc71;
+            color: #2ecc71;
+        }
+
+        .feedback.incorrect {
+            background: rgba(231,76,60,0.2);
+            border: 2px solid #e74c3c;
+            color: #e74c3c;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .tv-frame {
+                width: 100%;
+                height: 100vh;
+                padding: 10px;
+                border-radius: 0;
+                margin: 0;
+            }
+
+            .tv-screen {
+                border-radius: 0;
+            }
+
+            .show-logo {
+                font-size: 1.8em;
+                line-height: 1.2;
+            }
+
+            .subtitle {
+                font-size: 1em;
+                margin-bottom: 20px;
+            }
+
+            .contestant-form {
+                padding: 20px 15px;
+                margin: 0 10px;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                margin: 15px 0;
+            }
+
+            .game-card {
+                min-height: 150px;
+                padding: 15px;
+            }
+
+            .answers-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .question {
+                font-size: 1.1em;
+            }
+
+            .game-content {
+                padding: 15px;
+            }
+
+            .question-container {
+                padding: 20px 15px;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .show-logo {
+                font-size: 1.5em;
+            }
+
+            .game-icon {
+                font-size: 2em;
+            }
+
+            .game-title {
+                font-size: 1.1em;
+            }
+
+            .game-description {
+                font-size: 0.85em;
+            }
+
+            .answer-btn {
+                font-size: 0.9em;
+                padding: 12px;
+                min-height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tv-frame">
+        <div class="tv-screen">
+            <div class="screen-content">
+                <!-- Tela de Início -->
+                <div id="startScreen" class="start-screen">
+                    <div class="show-logo">💰 SHOW DO CONHECIMENTO FINANCEIRO 📺</div>
+                    <div class="subtitle">O talk show que transforma você em um expert financeiro!</div>
+                    
+                    <div class="contestant-form">
+                        <div class="form-group">
+                            <label for="playerName">Qual é o seu nome, participante?</label>
+                            <input type="text" id="playerName" placeholder="Digite seu nome completo" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="playerSegment">Em qual segmento você trabalha?</label>
+                            <select id="playerSegment" required>
+                                <option value="">Selecione seu segmento</option>
+                                <option value="Administrativo">Administrativo</option>
+                                <option value="Vendas">Vendas</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="TI/Tecnologia">TI/Tecnologia</option>
+                                <option value="Recursos Humanos">Recursos Humanos</option>
+                                <option value="Financeiro">Financeiro</option>
+                                <option value="Operacional">Operacional</option>
+                                <option value="Atendimento">Atendimento</option>
+                                <option value="Gerência">Gerência</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                        
+                        <button class="start-button" onclick="startShow()">🎬 ENTRAR NO SHOW!</button>
+                    </div>
+                </div>
+
+                <!-- Menu de Jogos -->
+                <div id="gameMenu" class="game-menu">
+                    <div class="menu-header">
+                        <div class="player-info">
+                            <div class="player-name" id="displayName"></div>
+                            <div class="player-segment" id="displaySegment"></div>
+                        </div>
+                    </div>
+
+                    <div class="games-grid">
+                        <div class="game-card" onclick="startGame('quiz')">
+                            <div class="game-icon">🎯</div>
+                            <div class="game-title">Quiz da Jéssica</div>
+                            <div class="game-description">Acompanhe a jornada da Jéssica pelo mundo bancário respondendo perguntas sobre sua história</div>
+                        </div>
+
+                        <div class="game-card" onclick="startGame('association')">
+                            <div class="game-icon">🔗</div>
+                            <div class="game-title">Jogo de Associação</div>
+                            <div class="game-description">Conecte os conceitos financeiros com suas definições corretas</div>
+                        </div>
+
+                        <div class="game-card" onclick="startGame('timeline')">
+                            <div class="game-icon">⏰</div>
+                            <div class="game-title">Linha do Tempo</div>
+                            <div class="game-description">Organize os eventos da vida financeira da Jéssica na ordem correta</div>
+                        </div>
+
+                        <div class="game-card" onclick="startGame('scenario')">
+                            <div class="game-icon">🎭</div>
+                            <div class="game-title">Cenários Financeiros</div>
+                            <div class="game-description">Tome decisões financeiras em situações do dia a dia</div>
+                        </div>
+
+                        <div class="game-card" onclick="startGame('wheel')">
+                            <div class="game-icon">🎡</div>
+                            <div class="game-title">Roda da Fortuna</div>
+                            <div class="game-description">Gire a roda e responda perguntas sobre educação financeira</div>
+                        </div>
+
+                        <div class="game-card" onclick="startGame('memory')">
+                            <div class="game-icon">🧠</div>
+                            <div class="game-title">Jogo da Memória</div>
+                            <div class="game-description">Encontre os pares de termos e conceitos financeiros</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Área do Jogo -->
+                <div id="gameArea" class="game-area">
+                    <div class="game-header">
+                        <div class="game-title-header" id="gameTitle">Quiz da Jéssica</div>
+                        <div class="score-info">
+                            <span>Pontuação: <span id="score">0</span></span> | 
+                            <span>Pergunta: <span id="currentQuestion">1</span>/10</span>
+                        </div>
+                    </div>
+
+                    <div class="game-content" id="gameContent">
+                        <!-- Conteúdo do jogo será inserido aqui -->
+                    </div>
+
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="backToMenu()">🏠 Menu Principal</button>
+                        <button class="nav-btn" id="nextBtn" onclick="nextQuestion()" style="display: none;">Próxima Pergunta ➡️</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados do jogo
+        let currentPlayer = {};
+        let currentGame = '';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let gameData = {};
+
+        // Perguntas do Quiz da Jéssica
+        const quizQuestions = [
+            {
+                chapter: "🟢 Capítulo 1: A Primeira Conta",
+                narrative: "Jéssica começou a trabalhar e decidiu abrir sua primeira conta bancária. O atendente do banco pergunta se ela quer uma conta corrente ou poupança.",
+                question: "O que é uma conta corrente?",
+                options: [
+                    "Uma conta usada apenas para guardar dinheiro",
+                    "Uma conta que permite movimentações como saques, depósitos e pagamentos",
+                    "Uma conta que rende juros automaticamente",
+                    "Uma conta usada apenas por empresas"
+                ],
+                correct: 1,
+                feedback: "A conta corrente é ideal para o dia a dia: pagar contas, receber salário e fazer transferências."
+            },
+            {
+                chapter: "🟡 Capítulo 2: Guardando para o Futuro",
+                narrative: "Jéssica quer guardar parte do salário para emergências. Ela ouve falar da conta poupança.",
+                question: "Qual é a principal função da conta poupança?",
+                options: [
+                    "Realizar pagamentos de boletos",
+                    "Receber salário",
+                    "Guardar dinheiro com rendimento mensal",
+                    "Solicitar empréstimos"
+                ],
+                correct: 2,
+                feedback: "A poupança é usada para guardar dinheiro e ainda oferece rendimento mensal."
+            },
+            {
+                chapter: "🟠 Capítulo 3: Compras com Liberdade",
+                narrative: "Jéssica recebe uma oferta de cartão de crédito. Ela quer saber como funciona antes de aceitar.",
+                question: "O que é o cartão de crédito?",
+                options: [
+                    "Um valor que o banco dá e não precisa ser devolvido",
+                    "Um limite que o cliente usa e paga depois",
+                    "Um cartão que só serve para sacar dinheiro",
+                    "Um benefício exclusivo para quem tem conta poupança"
+                ],
+                correct: 1,
+                feedback: "O cartão de crédito permite compras com pagamento posterior, geralmente em fatura mensal."
+            },
+            {
+                chapter: "🔵 Capítulo 4: O Primeiro Deslize",
+                narrative: "Jéssica se empolga nas compras e não consegue pagar a fatura do cartão.",
+                question: "O que acontece quando o cliente não paga a fatura do cartão?",
+                options: [
+                    "O banco cancela a conta",
+                    "O cliente entra em inadimplência",
+                    "O valor é perdoado automaticamente",
+                    "O cliente recebe um novo cartão"
+                ],
+                correct: 1,
+                feedback: "A falta de pagamento gera inadimplência, com cobrança de juros e possível registro em órgãos de proteção ao crédito."
+            },
+            {
+                chapter: "🔴 Capítulo 5: Entendendo a Dívida",
+                narrative: "Jéssica quer entender o que significa estar inadimplente.",
+                question: "O que é inadimplência?",
+                options: [
+                    "Quando o cliente paga antes do vencimento",
+                    "Quando o cliente não paga uma dívida no prazo",
+                    "Quando o banco cobra taxas extras",
+                    "Quando o cliente tem saldo negativo"
+                ],
+                correct: 1,
+                feedback: "Inadimplência é o não pagamento de uma dívida no prazo acordado."
+            },
+            {
+                chapter: "🟣 Capítulo 6: O Nome Sujo",
+                narrative: "Jéssica recebe uma notificação: seu nome foi incluído em um órgão de proteção ao crédito.",
+                question: "O que significa estar com o \"nome sujo\"?",
+                options: [
+                    "Ter saldo negativo na conta",
+                    "Ter dívidas registradas em órgãos de proteção ao crédito",
+                    "Ter conta encerrada pelo banco",
+                    "Ter cartão vencido"
+                ],
+                correct: 1,
+                feedback: "\"Nome sujo\" indica que há dívidas registradas, o que dificulta acesso a crédito e financiamentos."
+            },
+            {
+                chapter: "🟤 Capítulo 7: Quem Controla Isso?",
+                narrative: "Jéssica quer saber quem fiscaliza os bancos e protege os consumidores.",
+                question: "Qual é o papel do Banco Central?",
+                options: [
+                    "Emitir cartões de crédito",
+                    "Controlar a inflação, fiscalizar bancos e emitir moeda",
+                    "Registrar dívidas dos consumidores",
+                    "Atender clientes diretamente"
+                ],
+                correct: 1,
+                feedback: "O Banco Central regula o sistema financeiro e garante a estabilidade econômica."
+            },
+            {
+                chapter: "⚪ Capítulo 8: Conhecendo os Órgãos",
+                narrative: "Jéssica pesquisa sobre os órgãos que registram dívidas.",
+                question: "Quais são os principais órgãos de proteção ao crédito?",
+                options: [
+                    "Banco Central e Receita Federal",
+                    "SPC, Serasa e Boa Vista",
+                    "Caixa Econômica e Banco do Brasil",
+                    "Procon e Ministério da Fazenda"
+                ],
+                correct: 1,
+                feedback: "SPC, Serasa e Boa Vista registram dívidas e ajudam bancos a avaliar o risco de crédito."
+            },
+            {
+                chapter: "🟧 Capítulo 9: Precisando de Ajuda",
+                narrative: "Jéssica quer reformar a casa e considera um empréstimo pessoal.",
+                question: "O que é um empréstimo pessoal?",
+                options: [
+                    "Um valor que o cliente recebe e paga em parcelas com juros",
+                    "Um presente do banco",
+                    "Um valor que não precisa ser devolvido",
+                    "Um tipo de cartão de crédito"
+                ],
+                correct: 0,
+                feedback: "O empréstimo pessoal é contratado com valor definido, prazo e juros."
+            },
+            {
+                chapter: "🟨 Capítulo 10: O Limite Extra",
+                narrative: "Jéssica percebe que o banco liberou um valor automático quando sua conta ficou negativa.",
+                question: "O que é o cheque especial?",
+                options: [
+                    "Um tipo de cartão",
+                    "Um limite automático na conta corrente para cobrir saldo negativo",
+                    "Um benefício para aposentados",
+                    "Um tipo de investimento"
+                ],
+                correct: 1,
+                feedback: "O cheque especial é um crédito automático, mas com juros altos. Deve ser usado com cautela."
+            }
+        ];
+
+        function startShow() {
+            const name = document.getElementById('playerName').value.trim();
+            const segment = document.getElementById('playerSegment').value;
+            
+            if (!name || !segment) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+            
+            currentPlayer = { name, segment };
+            document.getElementById('displayName').textContent = name;
+            document.getElementById('displaySegment').textContent = segment;
+            
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameMenu').style.display = 'block';
+        }
+
+        function startGame(gameType) {
+            currentGame = gameType;
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            document.getElementById('gameMenu').style.display = 'none';
+            document.getElementById('gameArea').style.display = 'block';
+            
+            updateScore();
+            
+            switch(gameType) {
+                case 'quiz':
+                    document.getElementById('gameTitle').textContent = 'Quiz da Jéssica';
+                    loadQuizQuestion();
+                    break;
+                case 'association':
+                    document.getElementById('gameTitle').textContent = 'Jogo de Associação';
+                    loadAssociationGame();
+                    break;
+                case 'timeline':
+                    document.getElementById('gameTitle').textContent = 'Linha do Tempo';
+                    loadTimelineGame();
+                    break;
+                case 'scenario':
+                    document.getElementById('gameTitle').textContent = 'Cenários Financeiros';
+                    loadScenarioGame();
+                    break;
+                case 'wheel':
+                    document.getElementById('gameTitle').textContent = 'Roda da Fortuna';
+                    loadWheelGame();
+                    break;
+                case 'memory':
+                    document.getElementById('gameTitle').textContent = 'Jogo da Memória';
+                    loadMemoryGame();
+                    break;
+            }
+        }
+
+        function loadQuizQuestion() {
+            if (currentQuestionIndex >= quizQuestions.length) {
+                showFinalScore();
+                return;
+            }
+            
+            const question = quizQuestions[currentQuestionIndex];
+            const gameContent = document.getElementById('gameContent');
+            
+            gameContent.innerHTML = `
+                <div class="question-container">
+                    <h3 style="color: #ffd700; margin-bottom: 20px;">${question.chapter}</h3>
+                    <p style="color: #fff; font-style: italic; margin-bottom: 25px; font-size: 1.1em;">${question.narrative}</p>
+                    <div class="question">${question.question}</div>
+                    <div class="answers-grid">
+                        ${question.options.map((option, index) => 
+                            `<button class="answer-btn" onclick="selectAnswer(${index})">${String.fromCharCode(65 + index)}. ${option}</button>`
+                        ).join('')}
+                    </div>
+                    <div class="feedback" id="feedback"></div>
+                </div>
+            `;
+            
+            updateQuestionCounter();
+        }
+
+        function selectAnswer(selectedIndex) {
+            const question = quizQuestions[currentQuestionIndex];
+            const buttons = document.querySelectorAll('.answer-btn');
+            const feedback = document.getElementById('feedback');
+            
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === question.correct) {
+                    btn.classList.add('correct');
+                } else if (index === selectedIndex && index !== question.correct) {
+                    btn.classList.add('incorrect');
+                }
+            });
+            
+            if (selectedIndex === question.correct) {
+                score += 10;
+                feedback.className = 'feedback correct';
+                feedback.textContent = `✅ Correto! ${question.feedback}`;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.textContent = `❌ Incorreto! ${question.feedback}`;
+            }
+            
+            feedback.style.display = 'block';
+            updateScore();
+            
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            document.getElementById('nextBtn').style.display = 'none';
+            loadQuizQuestion();
+        }
+
+        function loadAssociationGame() {
+            const concepts = [
+                { term: "Conta corrente", definition: "Uma conta usada para movimentações financeiras como saques, depósitos e pagamentos" },
+                { term: "Conta poupança", definition: "Uma conta destinada a guardar dinheiro com rendimento mensal" },
+                { term: "Cartão de crédito", definition: "Um limite que o cliente usa para compras e paga posteriormente em fatura" },
+                { term: "Inadimplência", definition: "O não pagamento de uma dívida no prazo combinado" },
+                { term: "Nome sujo", definition: "Um registro de dívidas que pode dificultar o acesso a crédito" },
+                { term: "Banco Central", definition: "Instituição que regula o sistema financeiro, controla a inflação e emite moeda" },
+                { term: "SPC e Serasa", definition: "Órgãos que registram dívidas e ajudam bancos a avaliar o risco de crédito" },
+                { term: "Empréstimo pessoal", definition: "Um valor que o cliente recebe e paga em parcelas com juros" },
+                { term: "Cheque especial", definition: "Um limite automático na conta corrente para cobrir saldo negativo" }
+            ];
+            
+            // Embaralhar conceitos e definições
+            const shuffledConcepts = [...concepts].sort(() => Math.random() - 0.5);
+            const shuffledDefinitions = [...concepts].sort(() => Math.random() - 0.5);
+            
+            let selectedConcept = null;
+            let selectedDefinition = null;
+            let matches = 0;
+            
+            const gameContent = document.getElementById('gameContent');
+            gameContent.innerHTML = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h3 style="color: #ffd700;">Conecte os conceitos às suas definições!</h3>
+                    <p style="color: #fff;">Clique em um conceito e depois em sua definição correspondente</p>
+                    <div style="margin-top: 20px;">
+                        <span style="color: #2ecc71; font-size: 1.2em;">Acertos: <span id="matches">0</span>/9</span>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div>
+                        <h4 style="color: #ffd700; text-align: center; margin-bottom: 20px;">📚 CONCEITOS</h4>
+                        <div class="concepts-column">
+                            ${shuffledConcepts.map((concept, index) => 
+                                `<div class="association-card concept-card" data-concept="${concept.term}" onclick="selectConcept('${concept.term}', this)">
+                                    ${concept.term}
+                                </div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 style="color: #ffd700; text-align: center; margin-bottom: 20px;">💡 DEFINIÇÕES</h4>
+                        <div class="definitions-column">
+                            ${shuffledDefinitions.map((definition, index) => 
+                                `<div class="association-card definition-card" data-definition="${definition.term}" onclick="selectDefinition('${definition.term}', this)">
+                                    ${definition.definition}
+                                </div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Adicionar estilos para o jogo de associação
+            const style = document.createElement('style');
+            style.textContent = `
+                .association-card {
+                    background: rgba(255,255,255,0.1);
+                    border: 2px solid rgba(255,255,255,0.3);
+                    border-radius: 15px;
+                    padding: 20px;
+                    margin-bottom: 15px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    text-align: center;
+                    color: #fff;
+                    min-height: 80px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                
+                .association-card:hover {
+                    background: rgba(255,255,255,0.2);
+                    transform: scale(1.05);
+                }
+                
+                .association-card.selected {
+                    background: rgba(255,215,0,0.3);
+                    border-color: #ffd700;
+                    box-shadow: 0 0 20px rgba(255,215,0,0.5);
+                }
+                
+                .association-card.matched {
+                    background: rgba(46,204,113,0.3);
+                    border-color: #2ecc71;
+                    cursor: not-allowed;
+                    opacity: 0.7;
+                }
+                
+                .association-card.incorrect {
+                    background: rgba(231,76,60,0.3);
+                    border-color: #e74c3c;
+                    animation: shake 0.5s ease-in-out;
+                }
+                
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-10px); }
+                    75% { transform: translateX(10px); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            window.selectConcept = function(conceptTerm, element) {
+                if (element.classList.contains('matched')) return;
+                
+                // Remover seleção anterior
+                document.querySelectorAll('.concept-card.selected').forEach(el => el.classList.remove('selected'));
+                
+                // Selecionar novo conceito
+                element.classList.add('selected');
+                selectedConcept = conceptTerm;
+                
+                checkMatch();
+            };
+            
+            window.selectDefinition = function(definitionTerm, element) {
+                if (element.classList.contains('matched')) return;
+                
+                // Remover seleção anterior
+                document.querySelectorAll('.definition-card.selected').forEach(el => el.classList.remove('selected'));
+                
+                // Selecionar nova definição
+                element.classList.add('selected');
+                selectedDefinition = definitionTerm;
+                
+                checkMatch();
+            };
+            
+            function checkMatch() {
+                if (selectedConcept && selectedDefinition) {
+                    if (selectedConcept === selectedDefinition) {
+                        // Acerto!
+                        document.querySelector(`[data-concept="${selectedConcept}"]`).classList.add('matched');
+                        document.querySelector(`[data-definition="${selectedDefinition}"]`).classList.add('matched');
+                        matches++;
+                        score += 15;
+                        document.getElementById('matches').textContent = matches;
+                        updateScore();
+                        
+                        if (matches === 9) {
+                            setTimeout(() => {
+                                alert('🎉 Parabéns! Você completou o jogo de associação!');
+                                showFinalScore();
+                            }, 1000);
+                        }
+                    } else {
+                        // Erro
+                        document.querySelector(`[data-concept="${selectedConcept}"]`).classList.add('incorrect');
+                        document.querySelector(`[data-definition="${selectedDefinition}"]`).classList.add('incorrect');
+                        
+                        setTimeout(() => {
+                            document.querySelector(`[data-concept="${selectedConcept}"]`).classList.remove('incorrect', 'selected');
+                            document.querySelector(`[data-definition="${selectedDefinition}"]`).classList.remove('incorrect', 'selected');
+                        }, 1000);
+                    }
+                    
+                    selectedConcept = null;
+                    selectedDefinition = null;
+                }
+            }
+        }
+
+        function loadTimelineGame() {
+            const events = [
+                { id: 1, text: "Jéssica começou a trabalhar", order: 1 },
+                { id: 2, text: "Abriu sua primeira conta bancária", order: 2 },
+                { id: 3, text: "Decidiu guardar dinheiro na poupança", order: 3 },
+                { id: 4, text: "Recebeu oferta de cartão de crédito", order: 4 },
+                { id: 5, text: "Se empolga nas compras", order: 5 },
+                { id: 6, text: "Não consegue pagar a fatura", order: 6 },
+                { id: 7, text: "Entra em inadimplência", order: 7 },
+                { id: 8, text: "Nome vai para órgãos de proteção", order: 8 }
+            ];
+            
+            const shuffledEvents = [...events].sort(() => Math.random() - 0.5);
+            let userOrder = [];
+            
+            const gameContent = document.getElementById('gameContent');
+            gameContent.innerHTML = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h3 style="color: #ffd700;">Organize a jornada da Jéssica!</h3>
+                    <p style="color: #fff;">Clique nos eventos na ordem cronológica correta</p>
+                </div>
+                
+                <div class="timeline-container">
+                    <div class="timeline-events">
+                        ${shuffledEvents.map(event => 
+                            `<div class="timeline-card" data-id="${event.id}" data-order="${event.order}" onclick="selectTimelineEvent(${event.id}, this)">
+                                <div class="event-number" style="display: none;"></div>
+                                <div class="event-text">${event.text}</div>
+                            </div>`
+                        ).join('')}
+                    </div>
+                    
+                    <div class="selected-timeline" style="margin-top: 40px;">
+                        <h4 style="color: #ffd700; text-align: center;">Sua sequência:</h4>
+                        <div class="user-timeline" id="userTimeline"></div>
+                        <button class="nav-btn" style="margin: 20px auto; display: block;" onclick="checkTimeline()">
+                            ✅ Verificar Sequência
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Adicionar estilos para timeline
+            const style = document.createElement('style');
+            style.textContent = `
+                .timeline-card {
+                    background: rgba(255,255,255,0.1);
+                    border: 2px solid rgba(255,255,255,0.3);
+                    border-radius: 15px;
+                    padding: 20px;
+                    margin: 10px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    color: #fff;
+                    text-align: center;
+                    position: relative;
+                    display: inline-block;
+                    width: calc(25% - 20px);
+                    min-height: 100px;
+                }
+                
+                .timeline-card:hover {
+                    background: rgba(255,255,255,0.2);
+                    transform: translateY(-5px);
+                }
+                
+                .timeline-card.selected {
+                    background: rgba(255,215,0,0.3);
+                    border-color: #ffd700;
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+                
+                .user-timeline {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    min-height: 50px;
+                    border: 2px dashed rgba(255,255,255,0.3);
+                    border-radius: 15px;
+                    padding: 20px;
+                    margin: 20px 0;
+                }
+                
+                .timeline-item {
+                    background: rgba(255,215,0,0.3);
+                    border: 2px solid #ffd700;
+                    border-radius: 10px;
+                    padding: 15px;
+                    margin: 5px;
+                    color: #fff;
+                    font-size: 0.9em;
+                    position: relative;
+                }
+                
+                .timeline-item::before {
+                    content: attr(data-position);
+                    position: absolute;
+                    top: -10px;
+                    left: -10px;
+                    background: #ffd700;
+                    color: #333;
+                    border-radius: 50%;
+                    width: 25px;
+                    height: 25px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    font-size: 0.8em;
+                }
+                
+                @media (max-width: 768px) {
+                    .timeline-card {
+                        width: calc(50% - 20px);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            window.selectTimelineEvent = function(eventId, element) {
+                if (element.classList.contains('selected')) return;
+                
+                element.classList.add('selected');
+                userOrder.push(eventId);
+                
+                const event = events.find(e => e.id === eventId);
+                const userTimeline = document.getElementById('userTimeline');
+                
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                timelineItem.setAttribute('data-position', userOrder.length);
+                timelineItem.textContent = event.text;
+                userTimeline.appendChild(timelineItem);
+            };
+            
+            window.checkTimeline = function() {
+                let correct = true;
+                for (let i = 0; i < userOrder.length; i++) {
+                    const event = events.find(e => e.id === userOrder[i]);
+                    if (event.order !== i + 1) {
+                        correct = false;
+                        break;
+                    }
+                }
+                
+                if (correct && userOrder.length === events.length) {
+                    score += 50;
+                    updateScore();
+                    alert('🎉 Perfeito! Você organizou corretamente a jornada da Jéssica!');
+                    showFinalScore();
+                } else if (userOrder.length < events.length) {
+                    alert('⚠️ Você ainda precisa ordenar todos os eventos!');
+                } else {
+                    alert('❌ A sequência não está correta. Que tal tentar novamente?');
+                    // Reset
+                    userOrder = [];
+                    document.querySelectorAll('.timeline-card').forEach(el => el.classList.remove('selected'));
+                    document.getElementById('userTimeline').innerHTML = '';
+                }
+            };
+        }
+
+        function loadScenarioGame() {
+            const scenarios = [
+                {
+                    title: "🏪 Compra Impulsiva",
+                    situation: "Você vê um produto em promoção que custa R$ 500. Você tem esse dinheiro na conta, mas é o seu dinheiro de emergência. O que fazer?",
+                    options: [
+                        "Comprar, pois é uma boa promoção",
+                        "Não comprar e manter a reserva de emergência",
+                        "Comprar no cartão de crédito",
+                        "Pedir emprestado para um amigo"
+                    ],
+                    correct: 1,
+                    feedback: "Correto! A reserva de emergência deve ser preservada para situações realmente urgentes."
+                },
+                {
+                    title: "💳 Fatura do Cartão",
+                    situation: "Sua fatura do cartão veio R$ 200 a mais do que você esperava. Você só consegue pagar o valor mínimo. O que fazer?",
+                    options: [
+                        "Pagar apenas o mínimo mesmo",
+                        "Tentar negociar com o banco",
+                        "Cortar gastos e tentar pagar o máximo possível",
+                        "Usar o cheque especial para pagar"
+                    ],
+                    correct: 2,
+                    feedback: "Certo! Pagando mais que o mínimo você evita juros altos e reduz a dívida mais rapidamente."
+                },
+                {
+                    title: "🏦 Conta no Banco",
+                    situation: "Você precisa escolher entre conta corrente e poupança para receber seu salário. Qual escolher?",
+                    options: [
+                        "Poupança, porque rende juros",
+                        "Conta corrente, para facilitar pagamentos",
+                        "Tanto faz, são iguais",
+                        "Deixar o dinheiro em casa"
+                    ],
+                    correct: 1,
+                    feedback: "Exato! A conta corrente é melhor para movimentação do salário e pagamento de contas."
+                }
+            ];
+            
+            let currentScenario = 0;
+            
+            function loadScenario() {
+                if (currentScenario >= scenarios.length) {
+                    showFinalScore();
+                    return;
+                }
+                
+                const scenario = scenarios[currentScenario];
+                const gameContent = document.getElementById('gameContent');
+                
+                gameContent.innerHTML = `
+                    <div class="question-container">
+                        <h3 style="color: #ffd700; margin-bottom: 20px;">${scenario.title}</h3>
+                        <div class="scenario-situation" style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; margin-bottom: 30px;">
+                            <p style="color: #fff; font-size: 1.2em; line-height: 1.6;">${scenario.situation}</p>
+                        </div>
+                        <div class="question">O que você faria nessa situação?</div>
+                        <div class="answers-grid">
+                            ${scenario.options.map((option, index) => 
+                                `<button class="answer-btn" onclick="selectScenarioAnswer(${index})">${String.fromCharCode(65 + index)}. ${option}</button>`
+                            ).join('')}
+                        </div>
+                        <div class="feedback" id="scenarioFeedback"></div>
+                    </div>
+                `;
+            }
+            
+            window.selectScenarioAnswer = function(selectedIndex) {
+                const scenario = scenarios[currentScenario];
+                const buttons = document.querySelectorAll('.answer-btn');
+                const feedback = document.getElementById('scenarioFeedback');
+                
+                buttons.forEach((btn, index) => {
+                    btn.disabled = true;
+                    if (index === scenario.correct) {
+                        btn.classList.add('correct');
+                    } else if (index === selectedIndex && index !== scenario.correct) {
+                        btn.classList.add('incorrect');
+                    }
+                });
+                
+                if (selectedIndex === scenario.correct) {
+                    score += 20;
+                    feedback.className = 'feedback correct';
+                    feedback.textContent = `✅ Excelente escolha! ${scenario.feedback}`;
+                } else {
+                    feedback.className = 'feedback incorrect';
+                    feedback.textContent = `❌ Não foi a melhor opção. ${scenario.feedback}`;
+                }
+                
+                feedback.style.display = 'block';
+                updateScore();
+                
+                currentScenario++;
+                setTimeout(() => {
+                    loadScenario();
+                }, 3000);
+            };
+            
+            loadScenario();
+        }
+
+        function loadWheelGame() {
+            const wheelQuestions = [
+                { question: "Qual a diferença entre débito e crédito?", answer: "Débito usa seu dinheiro, crédito é emprestado pelo banco" },
+                { question: "O que é taxa de juros?", answer: "É o custo do dinheiro emprestado" },
+                { question: "Para que serve o CPF?", answer: "Cadastro de Pessoa Física para identificação" },
+                { question: "O que é inflação?", answer: "Aumento generalizado dos preços" },
+                { question: "O que são juros compostos?", answer: "Juros calculados sobre juros anteriores" }
+            ];
+            
+            let currentWheelQuestion = 0;
+            
+            const gameContent = document.getElementById('gameContent');
+            gameContent.innerHTML = `
+                <div style="text-align: center;">
+                    <h3 style="color: #ffd700; margin-bottom: 30px;">🎡 Gire a Roda da Fortuna!</h3>
+                    
+                    <div class="wheel-container" style="position: relative; width: 300px; height: 300px; margin: 0 auto 40px;">
+                        <div class="wheel" id="wheel" style="
+                            width: 100%;
+                            height: 100%;
+                            border-radius: 50%;
+                            background: conic-gradient(
+                                #ff6b6b 0deg 72deg,
+                                #4ecdc4 72deg 144deg,
+                                #45b7d1 144deg 216deg,
+                                #96ceb4 216deg 288deg,
+                                #ffeaa7 288deg 360deg
+                            );
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 2em;
+                            color: white;
+                            font-weight: bold;
+                            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+                            cursor: pointer;
+                            transition: transform 3s cubic-bezier(0.2, 0.8, 0.7, 0.99);
+                        ">
+                            GIRAR
+                        </div>
+                        <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ffd700;"></div>
+                    </div>
+                    
+                    <div class="wheel-question" id="wheelQuestion" style="display: none;">
+                        <div class="question-container">
+                            <div class="question" id="currentWheelQuestion"></div>
+                            <input type="text" id="wheelAnswer" placeholder="Digite sua resposta..." style="
+                                width: 80%;
+                                padding: 15px;
+                                border: none;
+                                border-radius: 10px;
+                                font-size: 1.1em;
+                                margin: 20px;
+                                text-align: center;
+                            ">
+                            <br>
+                            <button class="nav-btn" onclick="checkWheelAnswer()">Verificar Resposta</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('wheel').addEventListener('click', spinWheel);
+            
+            function spinWheel() {
+                const wheel = document.getElementById('wheel');
+                const randomRotation = Math.random() * 360 + 720; // At least 2 full rotations
+                
+                wheel.style.transform = `rotate(${randomRotation}deg)`;
+                wheel.style.pointerEvents = 'none';
+                
+                setTimeout(() => {
+                    showWheelQuestion();
+                }, 3000);
+            }
+            
+            function showWheelQuestion() {
+                if (currentWheelQuestion >= wheelQuestions.length) {
+                    currentWheelQuestion = 0;
+                }
+                
+                document.getElementById('wheelQuestion').style.display = 'block';
+                document.getElementById('currentWheelQuestion').textContent = wheelQuestions[currentWheelQuestion].question;
+            }
+            
+            window.checkWheelAnswer = function() {
+                const userAnswer = document.getElementById('wheelAnswer').value.trim().toLowerCase();
+                const correctAnswer = wheelQuestions[currentWheelQuestion].answer.toLowerCase();
+                
+                if (userAnswer.includes('débito') || userAnswer.includes('crédito') || 
+                    userAnswer.includes('taxa') || userAnswer.includes('juros') || 
+                    userAnswer.includes('inflação') || userAnswer.includes('cpf')) {
+                    score += 25;
+                    alert(`✅ Correto! ${wheelQuestions[currentWheelQuestion].answer}`);
+                } else {
+                    alert(`❌ Resposta: ${wheelQuestions[currentWheelQuestion].answer}`);
+                }
+                
+                updateScore();
+                currentWheelQuestion++;
+                
+                if (currentWheelQuestion >= wheelQuestions.length) {
+                    setTimeout(() => {
+                        showFinalScore();
+                    }, 2000);
+                } else {
+                    // Reset for next question
+                    document.getElementById('wheelQuestion').style.display = 'none';
+                    document.getElementById('wheelAnswer').value = '';
+                    document.getElementById('wheel').style.pointerEvents = 'auto';
+                    document.getElementById('wheel').style.transform = 'rotate(0deg)';
+                }
+            };
+        }
+
+        function loadMemoryGame() {
+            const memoryPairs = [
+                { id: 1, content: "Conta Corrente", type: "term" },
+                { id: 1, content: "Movimentações diárias", type: "definition" },
+                { id: 2, content: "Poupança", type: "term" },
+                { id: 2, content: "Rendimento mensal", type: "definition" },
+                { id: 3, content: "Cartão de Crédito", type: "term" },
+                { id: 3, content: "Pagamento posterior", type: "definition" },
+                { id: 4, content: "Inadimplência", type: "term" },
+                { id: 4, content: "Não pagamento", type: "definition" },
+                { id: 5, content: "Banco Central", type: "term" },
+                { id: 5, content: "Regula sistema financeiro", type: "definition" },
+                { id: 6, content: "SPC/Serasa", type: "term" },
+                { id: 6, content: "Proteção ao crédito", type: "definition" }
+            ];
+            
+            const shuffledCards = [...memoryPairs].sort(() => Math.random() - 0.5);
+            let flippedCards = [];
+            let matchedPairs = 0;
+            
+            const gameContent = document.getElementById('gameContent');
+            gameContent.innerHTML = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h3 style="color: #ffd700;">🧠 Encontre os Pares!</h3>
+                    <p style="color: #fff;">Clique nas cartas para encontrar os pares de termos e definições</p>
+                    <div style="margin-top: 20px;">
+                        <span style="color: #2ecc71; font-size: 1.2em;">Pares encontrados: <span id="memoryMatches">0</span>/6</span>
+                    </div>
+                </div>
+                
+                <div class="memory-grid" style="
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 15px;
+                    max-width: 800px;
+                    margin: 0 auto;
+                ">
+                    ${shuffledCards.map((card, index) => `
+                        <div class="memory-card" data-id="${card.id}" data-index="${index}" onclick="flipCard(${index})">
+                            <div class="card-inner">
+                                <div class="card-front">?</div>
+                                <div class="card-back">${card.content}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // Adicionar estilos para jogo da memória
+            const style = document.createElement('style');
+            style.textContent = `
+                .memory-card {
+                    aspect-ratio: 1;
+                    perspective: 1000px;
+                    cursor: pointer;
+                }
+                
+                .card-inner {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                    transition: transform 0.6s;
+                    transform-style: preserve-3d;
+                }
+                
+                .memory-card.flipped .card-inner {
+                    transform: rotateY(180deg);
+                }
+                
+                .card-front, .card-back {
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    backface-visibility: hidden;
+                    border-radius: 15px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    text-align: center;
+                    padding: 10px;
+                    box-sizing: border-box;
+                }
+                
+                .card-front {
+                    background: linear-gradient(45deg, #667eea, #764ba2);
+                    color: white;
+                    font-size: 2em;
+                }
+                
+                .card-back {
+                    background: linear-gradient(45deg, #ffd700, #ffed4e);
+                    color: #333;
+                    transform: rotateY(180deg);
+                    font-size: 0.9em;
+                    line-height: 1.2;
+                }
+                
+                .memory-card.matched .card-back {
+                    background: linear-gradient(45deg, #2ecc71, #27ae60);
+                    color: white;
+                }
+                
+                @media (max-width: 768px) {
+                    .memory-grid {
+                        grid-template-columns: repeat(3, 1fr);
+                    }
+                    
+                    .card-back {
+                        font-size: 0.8em;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            window.flipCard = function(index) {
+                const card = document.querySelector(`[data-index="${index}"]`);
+                
+                if (card.classList.contains('flipped') || card.classList.contains('matched') || flippedCards.length >= 2) {
+                    return;
+                }
+                
+                card.classList.add('flipped');
+                flippedCards.push({ element: card, id: parseInt(card.dataset.id), index: index });
+                
+                if (flippedCards.length === 2) {
+                    setTimeout(checkMemoryMatch, 1000);
+                }
+            };
+            
+            function checkMemoryMatch() {
+                const [card1, card2] = flippedCards;
+                
+                if (card1.id === card2.id) {
+                    // Match!
+                    card1.element.classList.add('matched');
+                    card2.element.classList.add('matched');
+                    matchedPairs++;
+                    score += 20;
+                    
+                    document.getElementById('memoryMatches').textContent = matchedPairs;
+                    updateScore();
+                    
+                    if (matchedPairs === 6) {
+                        setTimeout(() => {
+                            alert('🎉 Parabéns! Você encontrou todos os pares!');
+                            showFinalScore();
+                        }, 1000);
+                    }
+                } else {
+                    // No match
+                    setTimeout(() => {
+                        card1.element.classList.remove('flipped');
+                        card2.element.classList.remove('flipped');
+                    }, 500);
+                }
+                
+                flippedCards = [];
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+
+        function updateQuestionCounter() {
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+        }
+
+        function showFinalScore() {
+            const gameContent = document.getElementById('gameContent');
+            let performance = '';
+            let badge = '';
+            
+            if (score >= 80) {
+                performance = 'Excelente!';
+                badge = '🥇 Expert Financeiro';
+            } else if (score >= 60) {
+                performance = 'Muito Bom!';
+                badge = '🥈 Conhecedor Financeiro';
+            } else if (score >= 40) {
+                performance = 'Bom!';
+                badge = '🥉 Aprendiz Financeiro';
+            } else {
+                performance = 'Continue estudando!';
+                badge = '📚 Estudante Financeiro';
+            }
+            
+            gameContent.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <h2 style="color: #ffd700; font-size: 2.5em; margin-bottom: 20px;">🎉 Parabéns!</h2>
+                    <div style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 40px; margin: 30px 0;">
+                        <h3 style="color: #fff; font-size: 1.8em; margin-bottom: 15px;">${currentPlayer.name}</h3>
+                        <p style="color: #ccc; font-size: 1.2em; margin-bottom: 25px;">Segmento: ${currentPlayer.segment}</p>
+                        <div style="font-size: 3em; margin: 20px 0;">${badge.split(' ')[0]}</div>
+                        <h4 style="color: #ffd700; font-size: 1.5em; margin-bottom: 15px;">${badge.split(' ').slice(1).join(' ')}</h4>
+                        <div style="font-size: 2em; color: #2ecc71; margin: 20px 0;">
+                            Pontuação Final: ${score} pontos
+                        </div>
+                        <p style="color: #fff; font-size: 1.3em; margin-bottom: 30px;">${performance}</p>
+                        
+                        <div style="background: rgba(255,215,0,0.1); border: 2px solid #ffd700; border-radius: 15px; padding: 25px; margin: 25px 0;">
+                            <h4 style="color: #ffd700; margin-bottom: 15px;">🏆 Conquistas Desbloqueadas:</h4>
+                            <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                                ${score >= 20 ? '<span style="color: #2ecc71;">✅ Primeiro Acerto</span>' : '<span style="color: #666;">❌ Primeiro Acerto</span>'}
+                                ${score >= 50 ? '<span style="color: #2ecc71;">✅ Meio Caminho</span>' : '<span style="color: #666;">❌ Meio Caminho</span>'}
+                                ${score >= 80 ? '<span style="color: #2ecc71;">✅ Especialista</span>' : '<span style="color: #666;">❌ Especialista</span>'}
+                                ${score >= 100 ? '<span style="color: #2ecc71;">✅ Perfeição</span>' : '<span style="color: #666;">❌ Perfeição</span>'}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 30px;">
+                            <button class="nav-btn" onclick="restartGame()" style="margin: 10px;">
+                                🔄 Jogar Novamente
+                            </button>
+                            <button class="nav-btn" onclick="backToMenu()" style="margin: 10px;">
+                                🏠 Menu Principal
+                            </button>
+                            <button class="nav-btn" onclick="downloadCertificate()" style="margin: 10px;">
+                                📜 Baixar Certificado
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function restartGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            updateScore();
+            
+            switch(currentGame) {
+                case 'quiz':
+                    loadQuizQuestion();
+                    break;
+                case 'association':
+                    loadAssociationGame();
+                    break;
+                case 'timeline':
+                    loadTimelineGame();
+                    break;
+                case 'scenario':
+                    loadScenarioGame();
+                    break;
+                case 'wheel':
+                    loadWheelGame();
+                    break;
+                case 'memory':
+                    loadMemoryGame();
+                    break;
+            }
+        }
+
+        function backToMenu() {
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('gameMenu').style.display = 'block';
+            
+            // Reset game state
+            currentQuestionIndex = 0;
+            score = 0;
+            currentGame = '';
+        }
+
+        function downloadCertificate() {
+            // Criar um certificado simples em HTML para download
+            const certificateHTML = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Certificado - Show do Conhecimento Financeiro</title>
+                    <style>
+                        body {
+                            font-family: 'Arial', serif;
+                            margin: 0;
+                            padding: 40px;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            min-height: 100vh;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                        }
+                        .certificate {
+                            background: white;
+                            padding: 60px;
+                            border-radius: 20px;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                            text-align: center;
+                            max-width: 800px;
+                            border: 10px solid #ffd700;
+                        }
+                        .certificate h1 {
+                            color: #333;
+                            font-size: 2.5em;
+                            margin-bottom: 20px;
+                            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+                        }
+                        .certificate h2 {
+                            color: #666;
+                            font-size: 1.8em;
+                            margin-bottom: 30px;
+                        }
+                        .participant-name {
+                            color: #ff6b6b;
+                            font-size: 2.2em;
+                            font-weight: bold;
+                            margin: 30px 0;
+                            text-decoration: underline;
+                        }
+                        .score {
+                            color: #2ecc71;
+                            font-size: 1.5em;
+                            font-weight: bold;
+                            margin: 20px 0;
+                        }
+                        .date {
+                            color: #999;
+                            margin-top: 40px;
+                            font-size: 1.1em;
+                        }
+                        .logo {
+                            font-size: 3em;
+                            margin-bottom: 20px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="certificate">
+                        <div class="logo">🏆💰📺</div>
+                        <h1>CERTIFICADO DE PARTICIPAÇÃO</h1>
+                        <h2>Show do Conhecimento Financeiro</h2>
+                        
+                        <p style="font-size: 1.3em; color: #666; margin: 30px 0;">
+                            Certificamos que
+                        </p>
+                        
+                        <div class="participant-name">${currentPlayer.name}</div>
+                        
+                        <p style="font-size: 1.2em; color: #666; line-height: 1.6;">
+                            do segmento <strong>${currentPlayer.segment}</strong><br>
+                            participou com sucesso do programa educativo<br>
+                            <strong>"Show do Conhecimento Financeiro"</strong><br>
+                            demonstrando conhecimento sobre produtos bancários,<br>
+                            sistema financeiro e educação financeira.
+                        </p>
+                        
+                        <div class="score">
+                            Pontuação Alcançada: ${score} pontos
+                        </div>
+                        
+                        <div class="date">
+                            Emitido em ${new Date().toLocaleDateString('pt-BR')}
+                        </div>
+                        
+                        <div style="margin-top: 40px; color: #999;">
+                            <em>Jogo Educativo - Conhecimento Financeiro</em>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            // Criar e baixar o arquivo
+            const blob = new Blob([certificateHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `certificado_${currentPlayer.name.replace(/\s+/g, '_')}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('📜 Certificado baixado com sucesso! Verifique sua pasta de downloads.');
+        }
+
+        // Efeitos visuais adicionais
+        function addTVEffects() {
+            // Adicionar efeito de linhas de scan da TV
+            const tvFrame = document.querySelector('.tv-frame');
+            const scanLines = document.createElement('div');
+            scanLines.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                pointer-events: none;
+                background: repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0,0,0,0.03) 2px,
+                    rgba(0,0,0,0.03) 4px
+                );
+                z-index: 1000;
+                border-radius: 20px;
+            `;
+            tvFrame.appendChild(scanLines);
+            
+            // Adicionar reflexo na tela
+            const reflection = document.createElement('div');
+            reflection.style.cssText = `
+                position: absolute;
+                top: 30px;
+                left: 30px;
+                right: 30px;
+                bottom: 30px;
+                pointer-events: none;
+                background: linear-gradient(
+                    135deg,
+                    rgba(255,255,255,0.1) 0%,
+                    transparent 20%,
+                    transparent 80%,
+                    rgba(255,255,255,0.05) 100%
+                );
+                border-radius: 20px;
+                z-index: 999;
+            `;
+            tvFrame.appendChild(reflection);
+        }
+
+        // Inicializar efeitos quando a página carrega
+        document.addEventListener('DOMContentLoaded', function() {
+            addTVEffects();
+            
+            // Adicionar efeito de "ligando a TV"
+            setTimeout(() => {
+                document.querySelector('.tv-screen').style.animation = 'tvTurnOn 1.5s ease-out';
+            }, 500);
+        });
+
+        // Adicionar animação de ligar TV
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes tvTurnOn {
+                0% {
+                    transform: scaleY(0.001) scaleX(1);
+                    filter: brightness(5);
+                }
+                50% {
+                    transform: scaleY(0.1) scaleX(1);
+                    filter: brightness(3);
+                }
+                100% {
+                    transform: scaleY(1) scaleX(1);
+                    filter: brightness(1);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Sons do jogo (usando Web Audio API para efeitos simples)
+        function playSound(type) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            let frequency;
+            let duration;
+            
+            switch(type) {
+                case 'correct':
+                    frequency = 800;
+                    duration = 0.3;
+                    break;
+                case 'incorrect':
+                    frequency = 300;
+                    duration = 0.5;
+                    break;
+                case 'click':
+                    frequency = 600;
+                    duration = 0.1;
+                    break;
+                default:
+                    return;
+            }
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        // Adicionar sons aos botões
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('answer-btn') || 
+                e.target.classList.contains('nav-btn') || 
+                e.target.classList.contains('start-button')) {
+                playSound('click');
+            }
+        });
+    </script>
+</body>
+</html>
