@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Cartas Espaciais - Agrupamentos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e1b4b, #581c87, #000000);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .glass-effect {
+            background: rgba(31, 41, 55, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.5);
+        }
+
+        /* Tela inicial */
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-header {
+            margin-bottom: 2rem;
+        }
+
+        .start-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .start-form {
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-field label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #d1d5db;
+        }
+
+        .form-field input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background: #374151;
+            border: 1px solid #a855f7;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-field input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+
+        /* Botões */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #2563eb);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #2563eb);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #d97706, #dc2626);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        /* Tela de regras */
+        .rules-screen {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .rules-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .rules-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .player-info {
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #8b5cf6;
+        }
+
+        .player-info h2 {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .player-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .rules-content {
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #3b82f6;
+        }
+
+        .rules-content h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .rule-box {
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid;
+        }
+
+        .rule-box.green {
+            background: rgba(6, 78, 59, 0.3);
+            border-color: #10b981;
+        }
+
+        .rule-box.yellow {
+            background: rgba(120, 53, 15, 0.3);
+            border-color: #f59e0b;
+        }
+
+        .rule-box.blue {
+            background: rgba(30, 58, 138, 0.3);
+            border-color: #3b82f6;
+        }
+
+        .rule-box h4 {
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .rule-box.green h4 {
+            color: #10b981;
+        }
+
+        .rule-box.yellow h4 {
+            color: #f59e0b;
+        }
+
+        .rule-box.blue h4 {
+            color: #3b82f6;
+        }
+
+        .rule-box ul, .rule-box ol {
+            margin-left: 1rem;
+        }
+
+        .rule-box li {
+            margin: 0.5rem 0;
+        }
+
+        /* Tela do jogo */
+        .game-screen {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .player-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .lives {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .groups-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .group {
+            padding: 1rem;
+            border-radius: 12px;
+            border: 2px solid;
+            min-height: 320px;
+        }
+
+        .group.consultar {
+            background: rgba(6, 78, 59, 0.3);
+            border-color: #10b981;
+        }
+
+        .group.cancelar {
+            background: rgba(120, 53, 15, 0.3);
+            border-color: #f59e0b;
+        }
+
+        .group h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .group.consultar h3 {
+            color: #10b981;
+        }
+
+        .group.cancelar h3 {
+            color: #f59e0b;
+        }
+
+        .group-cards {
+            max-height: 256px;
+            overflow-y: auto;
+        }
+
+        .group-card {
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border: 1px solid;
+            font-size: 0.9rem;
+            font-weight: 500;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .group-card:hover .card-controls {
+            opacity: 1;
+        }
+
+        .group-card.consultar {
+            background: #065f46;
+            border-color: #10b981;
+        }
+
+        .group-card.cancelar {
+            background: #92400e;
+            border-color: #f59e0b;
+        }
+
+        .group-card.wrong {
+            background: #991b1b !important;
+            border-color: #ef4444 !important;
+        }
+
+        .card-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-controls {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .card-controls button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 2px 4px;
+            font-size: 0.8rem;
+        }
+
+        .card-controls button:hover {
+            color: #d1d5db;
+        }
+
+        .card-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .card-controls .remove-btn {
+            color: #fca5a5;
+            margin-left: 8px;
+        }
+
+        .card-controls .remove-btn:hover {
+            color: #fecaca;
+        }
+
+        .drop-zone {
+            text-align: center;
+            padding: 2rem;
+            border: 2px dashed;
+            border-radius: 8px;
+            color: #9ca3af;
+        }
+
+        .drop-zone.consultar {
+            border-color: #10b981;
+            color: #6ee7b7;
+        }
+
+        .drop-zone.cancelar {
+            border-color: #f59e0b;
+            color: #fbbf24;
+        }
+
+        /* Cartas disponíveis */
+        .available-cards {
+            padding: 1.5rem;
+        }
+
+        .available-cards h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .available-card {
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: move;
+            transition: all 0.2s;
+            border: 1px solid #a855f7;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .available-card:hover {
+            background: linear-gradient(135deg, #7c3aed, #2563eb);
+            transform: translateY(-2px);
+        }
+
+        .available-card .card-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .verify-section {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        /* Modal de feedback */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            max-width: 400px;
+            margin: 1rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+            border: 2px solid;
+        }
+
+        .modal.warning {
+            background: rgba(146, 64, 14, 0.9);
+            color: #fbbf24;
+            border-color: #f59e0b;
+        }
+
+        .modal.error {
+            background: rgba(153, 27, 27, 0.9);
+            color: #fca5a5;
+            border-color: #ef4444;
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-message {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Tela de vitória */
+        .victory-screen {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .certificate {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 4px solid #fcd34d;
+            margin-bottom: 1.5rem;
+        }
+
+        .certificate-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            color: #1f2937;
+        }
+
+        .certificate-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .certificate h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .certificate-border {
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background: #fffbeb;
+        }
+
+        .certificate-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #7c3aed;
+            margin-bottom: 0.5rem;
+        }
+
+        .certificate-skills {
+            text-align: left;
+            margin: 1rem 0;
+        }
+
+        .certificate-stars {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            font-size: 1.5rem;
+            color: #f59e0b;
+        }
+
+        /* Tela de game over */
+        .gameover-screen {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .gameover-content {
+            padding: 2rem;
+            border: 1px solid #ef4444;
+        }
+
+        .gameover-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .gameover-content h1 {
+            font-size: 2rem;
+            color: #ef4444;
+            margin-bottom: 1rem;
+        }
+
+        .gameover-buttons {
+            margin-top: 1rem;
+        }
+
+        .gameover-buttons button {
+            width: 100%;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* Drag and drop */
+        .dragging {
+            opacity: 0.5;
+        }
+
+        .drop-over {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .groups-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .start-header h1 {
+                font-size: 2rem;
+            }
+
+            .rules-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Tela Inicial -->
+        <div id="startScreen" class="start-screen">
+            <div class="start-header">
+                <h1>⭐ Missão Galáctica 🌙</h1>
+                <p style="color: #d1d5db;">Organize os processos espaciais para completar sua missão!</p>
+            </div>
+            
+            <div class="start-form glass-effect">
+                <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    🚀 Dados do Astronauta
+                </h2>
+                
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Nome do Astronauta:</label>
+                        <input type="text" id="playerName" placeholder="Digite seu nome">
+                    </div>
+                    
+                    <div class="form-field">
+                        <label>CPF:</label>
+                        <input type="text" id="playerCPF" placeholder="000.000.000-00">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%;" onclick="startGame()">
+                    🚀 Iniciar Missão
+                </button>
+            </div>
+        </div>
+
+        <!-- Tela de Regras -->
+        <div id="rulesScreen" class="rules-screen hidden">
+            <div class="rules-header">
+                <h1>⭐ Regulamento da Missão 🌙</h1>
+                <p style="color: #d1d5db;">Bem-vindo, Astronauta! Leia as instruções antes de iniciar.</p>
+            </div>
+
+            <div class="player-info glass-effect">
+                <h2>🚀 Dados da Missão</h2>
+                <div class="player-grid">
+                    <p><strong style="color: #3b82f6;">Astronauta:</strong> <span id="playerNameDisplay"></span></p>
+                    <p><strong style="color: #3b82f6;">CPF:</strong> <span id="playerCPFDisplay"></span></p>
+                </div>
+            </div>
+
+            <div class="rules-content glass-effect">
+                <h3>☀️ Instruções da Missão Galáctica</h3>
+                
+                <p style="margin-bottom: 1rem;"><strong style="color: #3b82f6;">Objetivo:</strong> Organize as cartas espaciais em dois grupos corretos e na sequência adequada.</p>
+                
+                <div class="rules-grid">
+                    <div class="rule-box green">
+                        <h4>🟢 Grupo 1: Consultar Produto</h4>
+                        <p style="font-size: 0.9rem;">Arraste as cartas relacionadas à consulta de produtos para este grupo e organize na ordem correta do processo.</p>
+                    </div>
+                    
+                    <div class="rule-box yellow">
+                        <h4>🟡 Grupo 2: Cancelar Produto</h4>
+                        <p style="font-size: 0.9rem;">Arraste as cartas relacionadas ao cancelamento de produtos para este grupo e organize na ordem correta do processo.</p>
+                    </div>
+                </div>
+
+                <div class="rule-box yellow" style="margin-bottom: 1rem;">
+                    <h4>Regras Importantes:</h4>
+                    <ul style="font-size: 0.9rem; margin-top: 0.75rem;">
+                        <li>Você possui <strong>5 vidas espaciais ⭐</strong></li>
+                        <li>Cada erro na verificação remove uma vida</li>
+                        <li>Cartas no grupo errado serão devolvidas automaticamente</li>
+                        <li>Cartas na ordem errada ficarão <strong style="color: #ef4444;">vermelhas</strong> para te ajudar</li>
+                        <li>Use os botões ▲▼ para reorganizar as cartas dentro dos grupos</li>
+                        <li>Use o botão ✕ para remover cartas dos grupos</li>
+                        <li>Complete a missão para receber seu certificado galáctico!</li>
+                    </ul>
+                </div>
+
+                <div class="rule-box blue">
+                    <h4>Como Jogar:</h4>
+                    <ol style="font-size: 0.9rem; margin-top: 0.75rem;">
+                        <li>Arraste as cartas para os grupos corretos</li>
+                        <li>Organize as cartas na sequência correta dentro de cada grupo</li>
+                        <li>Clique em "🚀 Verificar Missão" para validar sua resposta</li>
+                        <li>Ajuste conforme o feedback recebido</li>
+                        <li>Complete ambos os grupos corretamente para vencer!</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button class="btn btn-success" onclick="continueToGame()" style="display: flex; align-items: center; gap: 0.5rem; margin: 0 auto; padding: 1rem 2rem; font-size: 1.1rem;">
+                    ✅ 🚀 Entendi! Vamos começar!
+                </button>
+            </div>
+        </div>
+
+        <!-- Tela do Jogo -->
+        <div id="gameScreen" class="game-screen hidden">
+            <div class="game-header glass-effect">
+                <div class="player-name">
+                    ⭐ Astronauta: <span id="gamePlayerName"></span>
+                </div>
+                <div class="lives">
+                    Vidas: <span id="livesDisplay"></span>
+                </div>
+            </div>
+
+            <div class="groups-container">
+                <div class="group consultar" id="consultarGroup" ondrop="handleDrop(event, 'consultar')" ondragover="handleDragOver(event)">
+                    <h3>✅ Consultar Produto</h3>
+                    <div id="consultarCards" class="group-cards"></div>
+                </div>
+
+                <div class="group cancelar" id="cancelarGroup" ondrop="handleDrop(event, 'cancelar')" ondragover="handleDragOver(event)">
+                    <h3>❌ Cancelar Produto</h3>
+                    <div id="cancelarCards" class="group-cards"></div>
+                </div>
+            </div>
+
+            <div class="available-cards glass-effect">
+                <h3>🚀 Cartas Espaciais Disponíveis</h3>
+                <div id="availableCards" class="cards-grid"></div>
+            </div>
+
+            <div class="verify-section">
+                <button class="btn btn-warning" id="verifyBtn" onclick="verifyGroups()" style="display: flex; align-items: center; gap: 0.5rem; margin: 0 auto; padding: 1rem 2rem; font-size: 1.1rem;">
+                    ✅ 🚀 Verificar Missão
+                </button>
+            </div>
+        </div>
+
+        <!-- Tela de Vitória -->
+        <div id="victoryScreen" class="victory-screen hidden">
+            <div class="certificate">
+                <div class="certificate-content">
+                    <div class="certificate-icon">🏆</div>
+                    <h1>CERTIFICADO GALÁCTICO</h1>
+                    
+                    <div class="certificate-border">
+                        <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                            Certificamos que o(a) astronauta
+                        </p>
+                        
+                        <div class="certificate-name" id="victoryPlayerName"></div>
+                        <p style="color: #6b7280; margin-bottom: 1rem;">CPF: <span id="victoryPlayerCPF"></span></p>
+                        
+                        <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                            completou com sucesso a <strong>Missão Galáctica</strong> de organização de processos espaciais,
+                            demonstrando habilidades excepcionais em:
+                        </p>
+                        
+                        <div class="certificate-skills">
+                            <p>✓ Classificação correta de processos</p>
+                            <p>✓ Sequenciamento lógico de operações</p>
+                            <p>✓ Pensamento estratégico espacial</p>
+                        </div>
+                        
+                        <div class="certificate-stars">
+                            <span>⭐</span>
+                            <span>⭐</span>
+                            <span>⭐</span>
+                        </div>
+                        
+                        <p style="font-size: 0.9rem; color: #6b7280; margin-top: 1rem;">
+                            Vidas restantes: <span id="finalLives"></span> ⭐
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="resetGame()">
+                🚀 Nova Missão
+            </button>
+        </div>
+
+        <!-- Tela de Game Over -->
+        <div id="gameOverScreen" class="gameover-screen hidden">
+            <div class="gameover-content glass-effect">
+                <div class="gameover-icon">💥</div>
+                <h1>Missão Falhada</h1>
+                <p style="color: #d1d5db; margin-bottom: 1.5rem;">
+                    Suas vidas espaciais se esgotaram, astronauta <span id="gameOverPlayerName"></span>. 
+                    Mas não desista! Toda missão espacial tem seus desafios.
+                </p>
+                
+                <div class="gameover-buttons">
+                    <button class="btn btn-danger" onclick="tryAgain()">
+                        🔄 🚀 Tente Novamente
+                    </button>
+                    
+                    <button class="btn btn-secondary" onclick="resetGame()">
+                        ← Voltar ao Início
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Feedback -->
+        <div id="feedbackModal" class="modal-overlay hidden">
+            <div id="feedbackModalContent" class="modal">
+                <div class="modal-icon" id="feedbackIcon"></div>
+                <div class="modal-message" id="feedbackMessage"></div>
+                <button class="btn" id="feedbackBtn" onclick="closeFeedback()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis do jogo
+        let gameState = 'start';
+        let playerName = '';
+        let playerCPF = '';
+        let lives = 5;
+        let feedbackMessage = '';
+        let showFeedback = false;
+        let wrongCards = [];
+        let draggedCard = null;
+
+        // Definindo as cartas e suas sequências corretas
+        const consultarProdutoCards = [
+            'Busca pelo CPF', 'Lupa de Pesquisa', 'Foto do Cliente', 'Produtos Cliente', 
+            'Acordos', 'Marcar Acordo', 'Consultar Produto', 'Dados Complementares', 
+            'Contratos Negociados', 'Detalhamento das Parcelas', 'Dados da Formalização'
+        ];
+
+        const cancelarProdutoCards = [
+            'Busca pelo CPF', 'Lupa de Pesquisa', 'Foto do Cliente', 'Produtos Cliente', 
+            'Acordos', 'Marcar Acordo', 'Cancelar Produtos', 'Justificativa do Cancelamento', 
+            'Motivo do Cancelamento', 'Justificativa', 'Conf. Cancelamento'
+        ];
+
+        // Criar lista de cartas únicas, mantendo duplicatas para cartas que aparecem nos dois grupos
+        const uniqueCards = [...new Set([...consultarProdutoCards, ...cancelarProdutoCards])];
+        const duplicatedCards = [];
+        
+        uniqueCards.forEach(card => {
+            // Se a carta aparece nos dois grupos, adiciona duas cópias
+            if (consultarProdutoCards.includes(card) && cancelarProdutoCards.includes(card)) {
+                duplicatedCards.push(`${card} (1)`, `${card} (2)`);
+            } else {
+                // Se aparece apenas em um grupo, adiciona uma cópia
+                duplicatedCards.push(card);
+            }
+        });
+
+        const allCards = duplicatedCards;
+        let shuffledCards = [];
+        let consultarGroup = [];
+        let cancelarGroup = [];
+
+        // Funções de navegação
+        function showScreen(screenId) {
+            const screens = ['startScreen', 'rulesScreen', 'gameScreen', 'victoryScreen', 'gameOverScreen'];
+            screens.forEach(screen => {
+                document.getElementById(screen).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        function startGame() {
+            playerName = document.getElementById('playerName').value.trim();
+            playerCPF = document.getElementById('playerCPF').value.trim();
+            
+            if (playerName && playerCPF) {
+                gameState = 'rules';
+                document.getElementById('playerNameDisplay').textContent = playerName;
+                document.getElementById('playerCPFDisplay').textContent = playerCPF;
+                showScreen('rulesScreen');
+            }
+        }
+
+        function continueToGame() {
+            gameState = 'playing';
+            lives = 5;
+            consultarGroup = [];
+            cancelarGroup = [];
+            wrongCards = [];
+            
+            // Embaralhar cartas
+            shuffledCards = [...allCards].sort(() => Math.random() - 0.5);
+            
+            document.getElementById('gamePlayerName').textContent = playerName;
+            updateLivesDisplay();
+            updateGameDisplay();
+            showScreen('gameScreen');
+        }
+
+        function updateLivesDisplay() {
+            document.getElementById('livesDisplay').textContent = Array(lives).fill('⭐').join('');
+        }
+
+        function updateGameDisplay() {
+            updateGroupDisplay('consultar', consultarGroup);
+            updateGroupDisplay('cancelar', cancelarGroup);
+            updateAvailableCards();
+            updateVerifyButton();
+        }
+
+        function updateGroupDisplay(groupType, cards) {
+            const container = document.getElementById(groupType + 'Cards');
+            
+            if (cards.length === 0) {
+                container.innerHTML = `
+                    <div class="drop-zone ${groupType}">
+                        Arraste as cartas aqui para o grupo "${groupType === 'consultar' ? 'Consultar' : 'Cancelar'} Produto"
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = cards.map((card, index) => {
+                const isWrongCard = wrongCards.includes(`${groupType}-${card}`);
+                return `
+                    <div class="group-card ${groupType} ${isWrongCard ? 'wrong' : ''}" data-card="${card}" data-group="${groupType}">
+                        <div class="card-content">
+                            <span>${groupType === 'consultar' ? '🟢' : '🟡'} ${index + 1}. ${card.replace(/ \([12]\)$/, '')}</span>
+                            <div class="card-controls">
+                                <button onclick="moveCard('${card}', 'up', '${groupType}')" ${index === 0 ? 'disabled' : ''}>▲</button>
+                                <button onclick="moveCard('${card}', 'down', '${groupType}')" ${index === cards.length - 1 ? 'disabled' : ''}>▼</button>
+                                <button class="remove-btn" onclick="removeFromGroup('${card}', '${groupType}')">✕</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateAvailableCards() {
+            const container = document.getElementById('availableCards');
+            container.innerHTML = shuffledCards.map((card, index) => `
+                <div class="available-card" draggable="true" ondragstart="handleDragStart(event, '${card}')" data-card="${card}">
+                    <div class="card-icon">🌌</div>
+                    <div style="font-size: 0.8rem; line-height: 1.2;">${card.replace(/ \([12]\)$/, '')}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateVerifyButton() {
+            const btn = document.getElementById('verifyBtn');
+            const disabled = consultarGroup.length === 0 || cancelarGroup.length === 0;
+            btn.disabled = disabled;
+            btn.style.opacity = disabled ? '0.5' : '1';
+            btn.style.cursor = disabled ? 'not-allowed' : 'pointer';
+        }
+
+        // Drag and Drop
+        function handleDragStart(event, card) {
+            draggedCard = card;
+            event.target.classList.add('dragging');
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('drop-over');
+        }
+
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('drop-over');
+        }
+
+        function handleDrop(event, groupType) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('drop-over');
+            
+            if (draggedCard) {
+                // Remove o sufixo (1) ou (2) para comparação
+                const cardName = draggedCard.replace(/ \([12]\)$/, '');
+                
+                if (groupType === 'consultar') {
+                    if (!consultarGroup.some(card => card.replace(/ \([12]\)$/, '') === cardName)) {
+                        consultarGroup.push(draggedCard);
+                        shuffledCards = shuffledCards.filter(card => card !== draggedCard);
+                    }
+                } else if (groupType === 'cancelar') {
+                    if (!cancelarGroup.some(card => card.replace(/ \([12]\)$/, '') === cardName)) {
+                        cancelarGroup.push(draggedCard);
+                        shuffledCards = shuffledCards.filter(card => card !== draggedCard);
+                    }
+                }
+                
+                draggedCard = null;
+                document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+                updateGameDisplay();
+            }
+        }
+
+        function removeFromGroup(card, groupType) {
+            if (groupType === 'consultar') {
+                consultarGroup = consultarGroup.filter(c => c !== card);
+                shuffledCards.push(card);
+            } else {
+                cancelarGroup = cancelarGroup.filter(c => c !== card);
+                shuffledCards.push(card);
+            }
+            updateGameDisplay();
+        }
+
+        function moveCard(card, direction, groupType) {
+            const group = groupType === 'consultar' ? consultarGroup : cancelarGroup;
+            const index = group.indexOf(card);
+            
+            if (direction === 'up' && index > 0) {
+                [group[index], group[index - 1]] = [group[index - 1], group[index]];
+            } else if (direction === 'down' && index < group.length - 1) {
+                [group[index], group[index + 1]] = [group[index + 1], group[index]];
+            }
+            
+            if (groupType === 'consultar') {
+                consultarGroup = group;
+            } else {
+                cancelarGroup = group;
+            }
+            
+            updateGameDisplay();
+        }
+
+        function verifyGroups() {
+            // Limpa cartas erradas da verificação anterior
+            wrongCards = [];
+            
+            // Remove sufixos das cartas para comparação
+            const consultarGroupClean = consultarGroup.map(card => card.replace(/ \([12]\)$/, ''));
+            const cancelarGroupClean = cancelarGroup.map(card => card.replace(/ \([12]\)$/, ''));
+            
+            // Verifica se as cartas estão nos grupos corretos
+            const consultarWrongCards = [];
+            const cancelarWrongCards = [];
+            
+            consultarGroup.forEach(card => {
+                const cardName = card.replace(/ \([12]\)$/, '');
+                if (!consultarProdutoCards.includes(cardName)) {
+                    consultarWrongCards.push(card);
+                }
+            });
+            
+            cancelarGroup.forEach(card => {
+                const cardName = card.replace(/ \([12]\)$/, '');
+                if (!cancelarProdutoCards.includes(cardName)) {
+                    cancelarWrongCards.push(card);
+                }
+            });
+            
+            // Se há cartas nos grupos errados, move elas de volta
+            if (consultarWrongCards.length > 0 || cancelarWrongCards.length > 0) {
+                const cardsToReturn = [...consultarWrongCards, ...cancelarWrongCards];
+                
+                shuffledCards.push(...cardsToReturn);
+                consultarGroup = consultarGroup.filter(card => !consultarWrongCards.includes(card));
+                cancelarGroup = cancelarGroup.filter(card => !cancelarWrongCards.includes(card));
+                
+                lives--;
+                showFeedbackModal('error', 'Algumas cartas estão nos grupos errados! Elas foram devolvidas para reorganização.', '❌');
+                
+                if (lives === 0) {
+                    setTimeout(() => {
+                        gameState = 'gameOver';
+                        document.getElementById('gameOverPlayerName').textContent = playerName;
+                        showScreen('gameOverScreen');
+                    }, 2000);
+                } else {
+                    updateLivesDisplay();
+                    updateGameDisplay();
+                }
+                return;
+            }
+            
+            // Verifica se a ordem está correta
+            const consultarCorrect = JSON.stringify(consultarGroupClean) === JSON.stringify(consultarProdutoCards);
+            const cancelarCorrect = JSON.stringify(cancelarGroupClean) === JSON.stringify(cancelarProdutoCards);
+            
+            if (consultarCorrect && cancelarCorrect) {
+                gameState = 'finished';
+                document.getElementById('victoryPlayerName').textContent = playerName;
+                document.getElementById('victoryPlayerCPF').textContent = playerCPF;
+                document.getElementById('finalLives').textContent = lives;
+                showScreen('victoryScreen');
+            } else {
+                // Identifica cartas na posição errada
+                const wrongCardsList = [];
+                
+                // Verifica grupo Consultar
+                consultarGroup.forEach((card, index) => {
+                    const cardName = card.replace(/ \([12]\)$/, '');
+                    if (consultarProdutoCards[index] !== cardName) {
+                        wrongCardsList.push(`consultar-${card}`);
+                    }
+                });
+                
+                // Verifica grupo Cancelar
+                cancelarGroup.forEach((card, index) => {
+                    const cardName = card.replace(/ \([12]\)$/, '');
+                    if (cancelarProdutoCards[index] !== cardName) {
+                        wrongCardsList.push(`cancelar-${card}`);
+                    }
+                });
+                
+                wrongCards = wrongCardsList;
+                lives--;
+                showFeedbackModal('error', 'Ordem incorreta! As cartas em vermelho estão na posição errada.', '❌');
+                
+                if (lives === 0) {
+                    setTimeout(() => {
+                        gameState = 'gameOver';
+                        document.getElementById('gameOverPlayerName').textContent = playerName;
+                        showScreen('gameOverScreen');
+                    }, 2000);
+                } else {
+                    updateLivesDisplay();
+                    updateGameDisplay();
+                }
+            }
+        }
+
+        function showFeedbackModal(type, message, icon) {
+            const modal = document.getElementById('feedbackModal');
+            const content = document.getElementById('feedbackModalContent');
+            const iconEl = document.getElementById('feedbackIcon');
+            const messageEl = document.getElementById('feedbackMessage');
+            const btn = document.getElementById('feedbackBtn');
+            
+            iconEl.textContent = icon;
+            messageEl.textContent = message;
+            
+            content.className = `modal ${type}`;
+            btn.className = `btn ${type === 'warning' ? 'btn-warning' : 'btn-danger'}`;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeFeedback() {
+            document.getElementById('feedbackModal').classList.add('hidden');
+        }
+
+        function resetGame() {
+            gameState = 'start';
+            playerName = '';
+            playerCPF = '';
+            lives = 5;
+            consultarGroup = [];
+            cancelarGroup = [];
+            shuffledCards = [];
+            wrongCards = [];
+            
+            document.getElementById('playerName').value = '';
+            document.getElementById('playerCPF').value = '';
+            
+            showScreen('startScreen');
+        }
+
+        function tryAgain() {
+            gameState = 'playing';
+            lives = 5;
+            consultarGroup = [];
+            cancelarGroup = [];
+            wrongCards = [];
+            
+            // Embaralhar cartas novamente
+            shuffledCards = [...allCards].sort(() => Math.random() - 0.5);
+            
+            updateLivesDisplay();
+            updateGameDisplay();
+            showScreen('gameScreen');
+        }
+
+        // Event listeners para drag and drop
+        document.addEventListener('DOMContentLoaded', function() {
+            // Adicionar event listeners para os grupos
+            const consultarGroupEl = document.getElementById('consultarGroup');
+            const cancelarGroupEl = document.getElementById('cancelarGroup');
+            
+            [consultarGroupEl, cancelarGroupEl].forEach(group => {
+                group.addEventListener('dragleave', handleDragLeave);
+            });
+            
+            // Inicializar tela
+            showScreen('startScreen');
+        });
+
+        // Prevenir comportamento padrão do drag em toda a página
+        document.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('drop', function(e) {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>
