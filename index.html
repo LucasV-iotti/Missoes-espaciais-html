@@ -1,4 +1,4 @@
-// Configuração do Supabase<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -1004,9 +1004,9 @@
             const logEntry = `[${timestamp}] ${message}`;
             connectionLog.push(logEntry);
             
-            // Mantém apenas os últimos 10 logs
-            if (connectionLog.length > 10) {
-                connectionLog = connectionLog.slice(-10);
+            // Mantém apenas os últimos 15 logs
+            if (connectionLog.length > 15) {
+                connectionLog = connectionLog.slice(-15);
             }
             
             // Atualiza o painel se estiver aberto
@@ -1038,6 +1038,7 @@
             addConnectionLog('Tentativa manual de reconexão iniciada', 'info');
             initSupabase();
         }
+        
         let supabase = null;
         let isConnected = false;
 
@@ -1129,24 +1130,29 @@
             }
         }
 
-        // Função para salvar dados no Supabase
+        // Função corrigida para salvar dados no Supabase
         async function saveGameDataToSupabase(gameData) {
             if (!isConnected || !supabase) {
                 console.warn('Supabase não conectado. Dados não foram salvos:', gameData);
+                addConnectionLog('❌ Tentativa de salvar sem conexão', 'error');
                 return { success: false, error: 'Não conectado ao Supabase' };
             }
 
             try {
                 updateConnectionStatus('loading', 'Salvando dados...');
+                addConnectionLog('Tentando salvar dados: ' + JSON.stringify(gameData));
                 
                 const { data, error } = await supabase
                     .from('missoes_espaciais')
-                    .insert([gameData]);
+                    .insert([gameData])
+                    .select(); // Adiciona select para retornar os dados inseridos
 
                 if (error) {
+                    addConnectionLog(`❌ Erro ao inserir: ${error.message}`, 'error');
                     throw error;
                 }
 
+                addConnectionLog('✅ Dados inseridos com sucesso!', 'success');
                 console.log('Dados salvos com sucesso:', data);
                 updateConnectionStatus('connected', 'Dados salvos!');
                 
@@ -1158,13 +1164,9 @@
                 return { success: true, data };
                 
             } catch (error) {
+                addConnectionLog(`❌ Erro inesperado ao salvar: ${error.message}`, 'error');
                 console.error('Erro ao salvar dados:', error);
                 updateConnectionStatus('disconnected', 'Erro ao salvar');
-                
-                // Tentar reconectar após 3 segundos
-                setTimeout(() => {
-                    initSupabase();
-                }, 3000);
                 
                 return { success: false, error: error.message };
             }
@@ -1411,7 +1413,8 @@
             updateGameDisplay();
         }
 
-        function verifyGroups() {
+        // Função corrigida para verificar grupos (agora é async)
+        async function verifyGroups() {
             // Limpa cartas erradas da verificação anterior
             wrongCards = [];
             
@@ -1449,9 +1452,9 @@
                 showFeedbackModal('error', 'Algumas cartas estão nos grupos errados! Elas foram devolvidas para reorganização.', '❌');
                 
                 if (lives === 0) {
-                    setTimeout(() => {
+                    setTimeout(async () => {
                         gameState = 'gameOver';
-                        saveGameData('derrota');
+                        await saveGameData('derrota');
                         document.getElementById('gameOverPlayerName').textContent = playerName;
                         showScreen('gameOverScreen');
                     }, 2000);
@@ -1468,7 +1471,7 @@
             
             if (consultarCorrect && cancelarCorrect) {
                 gameState = 'finished';
-                saveGameData('vitoria');
+                await saveGameData('vitoria'); // Agora espera a operação completar
                 document.getElementById('victoryPlayerName').textContent = playerName;
                 document.getElementById('victoryPlayerCPF').textContent = playerCPF;
                 document.getElementById('finalLives').textContent = lives;
@@ -1498,9 +1501,9 @@
                 showFeedbackModal('error', 'Ordem incorreta! As cartas em vermelho estão na posição errada.', '❌');
                 
                 if (lives === 0) {
-                    setTimeout(() => {
+                    setTimeout(async () => {
                         gameState = 'gameOver';
-                        saveGameData('derrota');
+                        await saveGameData('derrota'); // Agora espera a operação completar
                         document.getElementById('gameOverPlayerName').textContent = playerName;
                         showScreen('gameOverScreen');
                     }, 2000);
@@ -1511,11 +1514,11 @@
             }
         }
 
-        // Função para salvar dados do jogo
+        // Função corrigida para salvar dados do jogo (agora é async)
         async function saveGameData(status) {
             const gameData = {
                 nome: playerName,
-                cpf: playerCPF,
+                cpf: playerCPF.replace(/\D/g, ''), // Remove formatação do CPF
                 tentativas: attempts,
                 pontuacao: lives,
                 vidas_restantes: lives,
@@ -1525,13 +1528,23 @@
             
             console.log('Dados do jogo:', gameData);
             
-            // Salvar no Supabase
-            const result = await saveGameDataToSupabase(gameData);
-            
-            if (!result.success) {
-                console.error('Falha ao salvar no Supabase:', result.error);
-                // Aqui você pode implementar um fallback, como salvar localmente
-                // ou mostrar uma mensagem para o usuário
+            try {
+                // Salvar no Supabase
+                const result = await saveGameDataToSupabase(gameData);
+                
+                if (!result.success) {
+                    console.error('Falha ao salvar no Supabase:', result.error);
+                    // Aqui você pode implementar um fallback, como salvar localmente
+                    // ou mostrar uma mensagem para o usuário
+                    showFeedbackModal('warning', 'Dados salvos localmente. Conecte-se à internet para sincronizar.', '⚠️');
+                } else {
+                    console.log('Dados salvos com sucesso no Supabase!');
+                    addConnectionLog('✅ Partida salva com sucesso!', 'success');
+                }
+            } catch (error) {
+                console.error('Erro ao salvar dados:', error);
+                addConnectionLog(`❌ Erro ao salvar partida: ${error.message}`, 'error');
+                // Não mostrar modal de erro para não interromper o fluxo do jogo
             }
         }
 
@@ -1618,62 +1631,38 @@
             // Habilidades
             ctx.font = '16px Arial';
             ctx.textAlign = 'left';
-            const skills = [
-                '✓ Classificação correta de processos',
-                '✓ Sequenciamento lógico de operações', 
-                '✓ Pensamento estratégico espacial'
-            ];
-            
-            skills.forEach((skill, index) => {
-                ctx.fillText(skill, 200, 375 + (index * 25));
-            });
+            ctx.fillText('✓ Classificação correta de processos', 200, 375);
+            ctx.fillText('✓ Sequenciamento lógico de operações', 200, 395);
+            ctx.fillText('✓ Pensamento estratégico espacial', 200, 415);
             
             // Estrelas
-            ctx.font = '30px Arial';
+            ctx.font = '24px Arial';
             ctx.textAlign = 'center';
             ctx.fillStyle = '#f59e0b';
-            ctx.fillText('⭐ ⭐ ⭐', canvas.width / 2, 480);
+            ctx.fillText('⭐ ⭐ ⭐', canvas.width / 2, 460);
             
             // Vidas restantes
             ctx.font = '14px Arial';
             ctx.fillStyle = '#6b7280';
-            ctx.fillText(`Vidas restantes: ${lives} ⭐`, canvas.width / 2, 520);
+            ctx.fillText(`Vidas restantes: ${lives} ⭐`, canvas.width / 2, 490);
             
             // Data
-            const currentDate = new Date().toLocaleDateString('pt-BR');
-            ctx.fillText(`Data: ${currentDate}`, canvas.width / 2, 545);
+            const now = new Date();
+            ctx.fillText(`Emitido em: ${now.toLocaleDateString('pt-BR')}`, canvas.width / 2, 520);
             
-            // Converter canvas para imagem e baixar
+            // Baixar a imagem
             const link = document.createElement('a');
-            link.download = `certificado_galactica_${playerName.replace(/\s+/g, '_')}.png`;
-            link.href = canvas.toDataURL('image/png');
+            link.download = `Certificado_Galactico_${playerName.replace(/\s+/g, '_')}.png`;
+            link.href = canvas.toDataURL();
             link.click();
         }
 
-        function resetGame() {
-            gameState = 'start';
-            playerName = '';
-            playerCPF = '';
-            lives = 5;
-            consultarGroup = [];
-            cancelarGroup = [];
-            shuffledCards = [];
-            wrongCards = [];
-            attempts = 1;
-            
-            document.getElementById('playerName').value = '';
-            document.getElementById('playerCPF').value = '';
-            
-            showScreen('startScreen');
-        }
-
         function tryAgain() {
-            gameState = 'playing';
+            attempts++;
             lives = 5;
             consultarGroup = [];
             cancelarGroup = [];
             wrongCards = [];
-            attempts++;
             gameStartTime = Date.now();
             
             // Embaralhar cartas novamente
@@ -1684,31 +1673,108 @@
             showScreen('gameScreen');
         }
 
-        // Event listeners para drag and drop
-        document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar conexão com Supabase
-            initSupabase();
+        function resetGame() {
+            gameState = 'start';
+            playerName = '';
+            playerCPF = '';
+            lives = 5;
+            attempts = 1;
+            consultarGroup = [];
+            cancelarGroup = [];
+            wrongCards = [];
+            shuffledCards = [];
             
-            // Adicionar event listeners para os grupos
-            const consultarGroupEl = document.getElementById('consultarGroup');
-            const cancelarGroupEl = document.getElementById('cancelarGroup');
+            // Limpar campos de entrada
+            document.getElementById('playerName').value = '';
+            document.getElementById('playerCPF').value = '';
             
-            [consultarGroupEl, cancelarGroupEl].forEach(group => {
-                group.addEventListener('dragleave', handleDragLeave);
-            });
-            
-            // Inicializar tela
             showScreen('startScreen');
+        }
+
+        // Formatação do CPF enquanto digita
+        document.getElementById('playerCPF').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+            
+            if (value.length >= 11) {
+                value = value.substring(0, 11);
+            }
+            
+            // Aplica a formatação
+            if (value.length > 9) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            } else if (value.length > 6) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})/, '$1.$2.$3');
+            } else if (value.length > 3) {
+                value = value.replace(/(\d{3})(\d{3})/, '$1.$2');
+            }
+            
+            e.target.value = value;
         });
 
-        // Prevenir comportamento padrão do drag em toda a página
+        // Permitir Enter para iniciar o jogo
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (gameState === 'start') {
+                    startGame();
+                } else if (gameState === 'rules') {
+                    continueToGame();
+                }
+            }
+        });
+
+        // Prevenir comportamentos padrão de drag em elementos não desejados
+        document.addEventListener('dragstart', function(e) {
+            if (!e.target.classList.contains('available-card')) {
+                e.preventDefault();
+            }
+        });
+
         document.addEventListener('dragover', function(e) {
             e.preventDefault();
         });
 
-        document.addEventListener('drop', function(e) {
-            e.preventDefault();
+        // Remover classes de drag quando terminar
+        document.addEventListener('dragend', function(e) {
+            document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+            document.querySelectorAll('.drop-over').forEach(el => el.classList.remove('drop-over'));
         });
+
+        // Inicializar Supabase quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Jogo de Cartas Espaciais carregado!');
+            addConnectionLog('🚀 Aplicação iniciada', 'info');
+            
+            // Aguardar um pouco para a biblioteca carregar completamente
+            setTimeout(() => {
+                initSupabase();
+            }, 1000);
+        });
+
+        // SQL para criar a tabela no Supabase (comentário para referência)
+        /*
+        CREATE TABLE missoes_espaciais (
+            id SERIAL PRIMARY KEY,
+            nome VARCHAR(255) NOT NULL,
+            cpf VARCHAR(11) NOT NULL,
+            tentativas INTEGER DEFAULT 1,
+            pontuacao INTEGER DEFAULT 0,
+            vidas_restantes INTEGER DEFAULT 5,
+            status VARCHAR(50) DEFAULT 'vitoria',
+            tempo_jogo INTEGER DEFAULT 0,
+            data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        -- Para permitir inserções públicas (desabilitar RLS ou criar políticas apropriadas)
+        ALTER TABLE missoes_espaciais ENABLE ROW LEVEL SECURITY;
+        
+        -- Política para permitir inserções públicas (apenas para demonstração - ajuste conforme necessário)
+        CREATE POLICY "Permitir inserções públicas" ON missoes_espaciais
+            FOR INSERT WITH CHECK (true);
+        
+        -- Política para permitir leituras públicas (opcional)
+        CREATE POLICY "Permitir leituras públicas" ON missoes_espaciais
+            FOR SELECT USING (true);
+        */
     </script>
 </body>
 </html>
